@@ -1,0 +1,32 @@
+<html>
+  <head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.9.0/p5.min.js"></script>
+  </head>
+
+  <body>
+    <script>
+      let img;
+      let imgX = 0;
+      let imgY = 0;
+
+      // 一番最初に実行される(同期処理が可能)
+      function preload() {
+        // 画像をロード
+        img = loadImage("shoes_17.png");
+      }
+
+      // 二番目に実行される
+      function setup() {
+        createCanvas(640, 480);
+      }
+
+      // preload,setupが終わったら繰り返し実行される
+      function draw() {
+        background("#008080");
+
+        // 画像を描画
+        image(img, imgX, imgY);
+      }
+    </script>
+  </body>
+</html>
