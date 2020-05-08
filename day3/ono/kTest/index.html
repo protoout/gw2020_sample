@@ -1,0 +1,81 @@
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>PoseNet example using p5.js</title>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.9.0/p5.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.9.0/addons/p5.dom.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.9.0/p5.min.js"></script>
+    <script
+      src="https://unpkg.com/ml5@latest/dist/ml5.min.js"
+      type="text/javascript"
+    ></script>
+  </head>
+
+  <body>
+    <script>
+      let video;
+      let poseNet;
+      let poses = [];
+
+      let img;
+      let imgX = nosePos.x;
+      let imgY = nosePos.y;
+
+      // 一番最初に実行される(同期処理が可能)
+      function preload() {
+        // 画像をロード
+        img = loadImage("shoes_17.png");
+      }
+
+      function setup() {
+        createCanvas(640, 480);
+        video = createCapture(VIDEO);
+        video.size(width, height);
+
+        // Create a new poseNet method with a single detection
+        poseNet = ml5.poseNet(video, modelReady);
+        // This sets up an event that fills the global variable "poses"
+        // with an array every time new poses are detected
+        poseNet.on("pose", function (results) {
+          poses = results;
+        });
+        // Hide the video element, and just show the canvas
+        video.hide();
+      }
+
+      function modelReady() {
+        // select("#status").html("Model Loaded");
+        console.log("Model Loaded");
+      }
+
+      function draw() {
+        image(video, 0, 0, width, height);
+
+        // 鼻の位置を取得
+        // 他の部位の名前　https://github.com/tensorflow/tfjs-models/blob/master/posenet/README.md#keypoints
+        let nosePos = getPartsPosition("nose");
+
+        // 鼻の座標を取得するときはこんな感じで書きます
+        console.log("鼻のx座標=" + nosePos.x);
+        console.log("鼻のy座標=" + nosePos.y);
+
+        // 試しに赤鼻に
+        fill("#ff0000");
+        ellipse(nosePos.x, nosePos.y, 50, 50);
+
+        // 画像を描画
+        image(img, nosePos.x, nosePos.y, 100, 100);
+      }
+
+      function getPartsPosition(partsName) {
+        if (poses[0])
+          for (let i = 0; i < poses[0].pose.keypoints.length; i++)
+            if (poses[0].pose.keypoints[i].part == partsName)
+              return poses[0].pose.keypoints[i].position;
+
+        return { x: 0, y: 0 };
+      }
+    </script>
+  </body>
+</html>
